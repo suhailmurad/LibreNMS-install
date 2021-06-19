@@ -7,10 +7,15 @@ sudo timedatectl set-timezone Asia/Karachi
 **Installing PHP**
 
 sudo apt install software-properties-common
+
 sudo add-apt-repository universe
+
 sudo add-apt-repository ppa:ondrej/php
+
 sudo apt update
+
 sudo apt install acl curl composer fping git graphviz imagemagick mariadb-client mariadb-server mtr-tiny nginx-full nmap php7.4-cli php7.4-curl php7.4-fpm php7.4-gd php7.4-json php7.4-mbstring php7.4-mysql php7.4-snmp php7.4-xml php7.4-zip rrdtool snmp snmpd whois unzip python3-pymysql python3-dotenv python3-redis python3-setuptools
+
 
 
 **Configuring PHP**
@@ -52,7 +57,9 @@ sudo nano /etc/php/7.4/cli/php.ini
 
 [Date]
 ; Defines the default timezone used by the date functions
+
 ; http://php.net/date.timezone
+
 date.timezone = Asia/Karachi
 
 
@@ -92,6 +99,7 @@ Setting the root password ensures that nobody can log into the MariaDB
 root user without the proper authorisation.
 
 **Set root password? [Y/n] y**
+
 New password:
 Re-enter new password:
 Password updated successfully!
@@ -105,12 +113,14 @@ go a bit smoother.  You should remove them before moving into a
 production environment.
 
 **Remove anonymous users? [Y/n] y**
+
  ... Success!
 
 Normally, root should only be allowed to connect from 'localhost'.  This
 ensures that someone cannot guess at the root password from the network.
 
 **Disallow root login remotely? [Y/n] y**
+
  ... Success!
 
 By default, MariaDB comes with a database named 'test' that anyone can
@@ -118,6 +128,7 @@ access.  This is also intended only for testing, and should be removed
 before moving into a production environment.
 
 **Remove test database and access to it? [Y/n] y**
+
  - Dropping test database...
  ... Success!
  - Removing privileges on test database...
@@ -127,6 +138,7 @@ Reloading the privilege tables will ensure that all changes made so far
 will take effect immediately.
 
 **Reload privilege tables now? [Y/n] y**
+
  ... Success!
 
 Cleaning up...
@@ -142,13 +154,16 @@ installation should now be secure.
 **Installing Web Server**
 
 We will install and use Nginx as our web server:
+
 sudo apt-get -y install nginx-full
 
 
 **Adding LibreNMS User**
 
 Type the following commands to add a librenms user:
+
 sudo useradd librenms -d /opt/librenms -M -r
+
 sudo usermod -a -G librenms www-data
 
 
@@ -156,24 +171,32 @@ sudo usermod -a -G librenms www-data
 
 
 You need to create a database to use with librenms like below:
+
 sudo mysql -u root -p
 
 Type the following at mysql prompt to create a database, user and password:
 
 CREATE DATABASE librenms CHARACTER SET utf8 COLLATE utf8_unicode_ci;
+
 CREATE USER 'librenms'@'localhost' IDENTIFIED BY 'librenms';
+
 GRANT ALL PRIVILEGES ON librenms.* TO 'librenms'@'localhost';
+
 FLUSH PRIVILEGES;
+
 exit
 
 
 Now edit 50-server.cnf file:
 
 sudo nano /etc/mysql/mariadb.conf.d/50-server.cnf
+
 Within the **[mysqld]** section, add below parameters:
 
 innodb_file_per_table=1
+
 sql-mode=""
+
 lower_case_table_names=0
 
 Save and close file when you finished.
