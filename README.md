@@ -27,9 +27,11 @@ Save and close file.
 
 
 **Now edit /etc/php/7.4/fpm/php.ini file:**
+
 sudo nano /etc/php/7.4/fpm/php.ini
 
 **Uncomment and update its value with your timezone:**
+
 [Date]
 ; Defines the default timezone used by the date functions
 ; http://php.net/date.timezone
@@ -55,7 +57,9 @@ Save and close.
 
 
 Restart PHP service to take changes into effect:
+
 sudo systemctl restart php7.4-fpm
+
 
 **Installing Database**
 
