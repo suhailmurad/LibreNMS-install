@@ -270,28 +270,34 @@ Click 'Next Stage' to continue.
 
 ![1](https://user-images.githubusercontent.com/43593501/122636034-8b2b2d80-d100-11eb-8829-84f1f8fabb1c.png)
 
+
 Provide database credentials you created earlier and click Next Stage.
 
 
 ![2](https://user-images.githubusercontent.com/43593501/122636044-9a11e000-d100-11eb-8f0e-43a4bc70ae75.png)
+
 
 This will import librenms database schema and when you see Success click Goto Add User
 
 
 ![3](https://user-images.githubusercontent.com/43593501/122636072-ac8c1980-d100-11eb-8983-6fe1aae66fd2.png)
 
+
 Add a user, this will be your librenms administrative user:
 
 
 ![4](https://user-images.githubusercontent.com/43593501/122636091-c6c5f780-d100-11eb-8339-0168c4c20e4c.png)
 
+
 Click Generate Config
 
 ![5](https://user-images.githubusercontent.com/43593501/122636104-d7766d80-d100-11eb-93ef-80d9b9765066.png)
 
+
 **Now stop here and copy this entire script:**
 
 ![6](https://user-images.githubusercontent.com/43593501/122636110-e2c99900-d100-11eb-82d9-8e8aa74c45fc.png)
+
 
 
 Go back to Ubuntu terminal and create config.php file like below:
@@ -305,16 +311,21 @@ Now run the validation check
 sudo /opt/librenms/validate.php
 
 and you will see the output like below:
+
 ![7](https://user-images.githubusercontent.com/43593501/122636180-405de580-d101-11eb-969e-c8b4fe0ae889.png)
+
 
 
 If you see any warning other than the adding host you got to fix it first before moving to next step:
 Now go back to your browser you left unfinished and click Finish:
 As you have already done with validation check so you just need to click on validate your install and fix any issues:
 
+
 ![8](https://user-images.githubusercontent.com/43593501/122636197-55d30f80-d101-11eb-9d40-ec8622258ee5.png)
 
+
 This will bring you to the below login page of librenms. You can log in with the user and password you created just a moment ago.
+
 ![9](https://user-images.githubusercontent.com/43593501/122636214-671c1c00-d101-11eb-8878-a76798673adf.png)
 
 
