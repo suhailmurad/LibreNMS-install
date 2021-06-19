@@ -276,10 +276,12 @@ sudo ufw allow 161/udp
 sudo ufw enable
 
 Run the 'ufw status' command to see the firewall status.
+
 sudo ufw status
 
 
 **LibreNMS Web Installer**
+
 In this step, you will run LibreNMS web installer by navigating to **http://your_server_name** or **http://your_server_ip** in the web browser address bar and press Enter.
 You will see the below **install.php page showing the result of pre-install checks**. Make sure all status are installed, yes as shown in the screenshot below.
 Click 'Next Stage' to continue.
@@ -318,13 +320,17 @@ Click Generate Config
 
 
 Go back to Ubuntu terminal and create config.php file like below:
+
 sudo nano /opt/librenms/config.php
+
 Paste entire script into it, save and close the file when you are finished.
 
 **Update the permission**
+
 sudo chown -R librenms:librenms /opt/librenms
 
 Now run the validation check
+
 sudo /opt/librenms/validate.php
 
 and you will see the output like below:
@@ -350,5 +356,6 @@ Login and add Devices :D :)
 
 
 **Wrapping up**
+
 You have successfully completed librenms installation and added localhost as an example of adding device. Now you can start adding your devices like network switches, routers, firewalls, Windows, Linux and Unix servers to monitor their utilization.
 
