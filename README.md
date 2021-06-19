@@ -121,3 +121,205 @@ All done!  If you've completed all of the above steps, your MariaDB
 installation should now be secure.
 
 Thanks for using MariaDB!
+######################################################################
+
+**Installing Web Server**
+
+We will install and use Nginx as our web server:
+sudo apt-get -y install nginx-full
+
+**Adding LibreNMS User**
+
+Type the following commands to add a librenms user:
+sudo useradd librenms -d /opt/librenms -M -r
+sudo usermod -a -G librenms www-data
+
+**Creating Database**
+
+
+You need to create a database to use with librenms like below:
+sudo mysql -u root -p
+
+Type the following at mysql prompt to create a database, user and password:
+
+CREATE DATABASE librenms CHARACTER SET utf8 COLLATE utf8_unicode_ci;
+CREATE USER 'librenms'@'localhost' IDENTIFIED BY 'librenms';
+GRANT ALL PRIVILEGES ON librenms.* TO 'librenms'@'localhost';
+FLUSH PRIVILEGES;
+exit
+
+
+Now edit 50-server.cnf file:
+
+sudo nano /etc/mysql/mariadb.conf.d/50-server.cnf
+Within the **[mysqld]** section, add below parameters:
+
+innodb_file_per_table=1
+sql-mode=""
+lower_case_table_names=0
+
+Save and close file when you finished.
+
+Restart MariaDB service to take changes into effect:
+sudo systemctl restart mariadb
+
+**Downloading LibreNMS**
+
+Now you need to download librenms on your Ubuntu server like below:
+cd /opt
+sudo git clone https://github.com/librenms/librenms.git librenms
+
+**Configuring Nginx**
+
+Create a librenms configuration file within nginx to make its web interface accessible:
+sudo nano /etc/nginx/sites-available/librenms.conf
+
+Add the below parameters and make sure you replace **your_server_name_or_ip** with yours:
+
+server {
+ listen      80;
+ server_name **your_server_name_or_ip**;
+ root        /opt/librenms/html;
+ index       index.php;
+
+ charset utf-8;
+ gzip on;
+ gzip_types text/css application/javascript text/javascript application/x-javascript image/svg+xml text/plain text/xsd text/xsl text/xml image/x-icon;
+ location / {
+  try_files $uri $uri/ /index.php?$query_string;
+ }
+ location /api/v0 {
+  try_files $uri $uri/ /api_v0.php?$query_string;
+ }
+ location ~ \.php {
+  include fastcgi.conf;
+  fastcgi_split_path_info ^(.+\.php)(/.+)$;
+  fastcgi_pass unix:/var/run/php/php7.4-fpm.sock;
+ }
+ location ~ /\.ht {
+  deny all;
+ }
+}
+
+Save and close file when you are finished.
+
+Now you need to create a symbolic link to librenms.conf file like below:
+
+sudo ln -s /etc/nginx/sites-available/librenms.conf /etc/nginx/sites-enabled/
+sudo unlink /etc/nginx/sites-enabled/default
+
+**Restart the service to take changes into effect:**
+sudo systemctl restart nginx
+sudo systemctl restart php7.4-fpm
+
+**Configuring SNMPD**
+Type the following commands to configure snmp to use with librenms:
+sudo cp /opt/librenms/snmpd.conf.example /etc/snmp/snmpd.conf
+
+sudo nano /etc/snmp/snmpd.conf
+Replace the text which says **RANDOMSTRINGGOESHERE** and set your own community string like below:
+com2sec readonly  default         **public**
+
+Save and close when you are finished
+
+
+sudo curl -o /usr/bin/distro https://raw.githubusercontent.com/librenms/librenms-agent/master/snmp/distro
+sudo chmod +x /usr/bin/distro
+sudo systemctl restart snmpd
+
+**Adding CronJob**
+sudo cp /opt/librenms/librenms.nonroot.cron /etc/cron.d/librenms
+
+
+LibreNMS keeps logs in /opt/librenms/logs. Over time these can become large and be rotated out. You can rotate out the old logs using the below logrotate config file:
+sudo cp /opt/librenms/misc/librenms.logrotate /etc/logrotate.d/librenms
+
+**Applying Permissions**
+sudo chown -R librenms:librenms /opt/librenms
+sudo setfacl -d -m g::rwx /opt/librenms/rrd /opt/librenms/logs
+sudo setfacl -R -m g::rwx /opt/librenms/rrd /opt/librenms/logs
+
+**Run Composer Wrapper**
+
+You will need to run composer wrapper script from /opt/librenms directory like below:
+sudo su - librenms
+/opt/librenms/scripts/composer_wrapper.php install --no-dev
+
+You will see the output similar to the below while running composer wrapper script and it will take few minutes to complete.
+When its done, type the exit command to return back to sudo non-root user terminal:
+exit
+
+
+**Adding Firewall Rules**
+sudo ufw allow ssh
+sudo ufw allow http
+sudo ufw allow https
+sudo ufw allow 161/udp
+sudo ufw enable
+
+Run the 'ufw status' command to see the firewall status.
+sudo ufw status
+
+
+**LibreNMS Web Installer**
+In this step, you will run LibreNMS web installer by navigating to **http://your_server_name** or **http://your_server_ip** in the web browser address bar and press Enter.
+You will see the below **install.php page showing the result of pre-install checks**. Make sure all status are installed, yes as shown in the screenshot below.
+Click 'Next Stage' to continue.
+
+
+![1](https://user-images.githubusercontent.com/43593501/122636034-8b2b2d80-d100-11eb-8829-84f1f8fabb1c.png)
+
+Provide database credentials you created earlier and click Next Stage.
+
+
+![2](https://user-images.githubusercontent.com/43593501/122636044-9a11e000-d100-11eb-8f0e-43a4bc70ae75.png)
+
+This will import librenms database schema and when you see Success click Goto Add User
+
+
+![3](https://user-images.githubusercontent.com/43593501/122636072-ac8c1980-d100-11eb-8983-6fe1aae66fd2.png)
+
+Add a user, this will be your librenms administrative user:
+
+
+![4](https://user-images.githubusercontent.com/43593501/122636091-c6c5f780-d100-11eb-8339-0168c4c20e4c.png)
+
+Click Generate Config
+
+![5](https://user-images.githubusercontent.com/43593501/122636104-d7766d80-d100-11eb-93ef-80d9b9765066.png)
+
+**Now stop here and copy this entire script:**
+
+![6](https://user-images.githubusercontent.com/43593501/122636110-e2c99900-d100-11eb-82d9-8e8aa74c45fc.png)
+
+
+Go back to Ubuntu terminal and create config.php file like below:
+sudo nano /opt/librenms/config.php
+Paste entire script into it, save and close the file when you are finished.
+
+**Update the permission**
+sudo chown -R librenms:librenms /opt/librenms
+
+Now run the validation check
+sudo /opt/librenms/validate.php
+
+and you will see the output like below:
+![7](https://user-images.githubusercontent.com/43593501/122636180-405de580-d101-11eb-969e-c8b4fe0ae889.png)
+
+
+If you see any warning other than the adding host you got to fix it first before moving to next step:
+Now go back to your browser you left unfinished and click Finish:
+As you have already done with validation check so you just need to click on validate your install and fix any issues:
+
+![8](https://user-images.githubusercontent.com/43593501/122636197-55d30f80-d101-11eb-9d40-ec8622258ee5.png)
+
+This will bring you to the below login page of librenms. You can log in with the user and password you created just a moment ago.
+![9](https://user-images.githubusercontent.com/43593501/122636214-671c1c00-d101-11eb-8878-a76798673adf.png)
+
+
+Login and add Devices :D :)
+
+
+**Wrapping up**
+You have successfully completed librenms installation and added localhost as an example of adding device. Now you can start adding your devices like network switches, routers, firewalls, Windows, Linux and Unix servers to monitor their utilization.
+
