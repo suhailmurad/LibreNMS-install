@@ -1,6 +1,7 @@
 # LibreNMS
 
 **Set Timezone**
+
 sudo timedatectl set-timezone Asia/Karachi
 
 **Installing PHP**
@@ -15,17 +16,20 @@ sudo apt install acl curl composer fping git graphviz imagemagick mariadb-client
 **Configuring PHP**
 
 You also need to make few changes in PHP configuration file like below:
+
 sudo nano /etc/php/7.4/cli/php.ini
 
-Search for cgi.fix_pathinfo parameter, uncomment and change its value like below:
-cgi.fix_pathinfo=0
+Search for **cgi.fix_pathinfo** parameter, uncomment and change its value like below: 
+
+**cgi.fix_pathinfo=0**
 
 Save and close file.
 
-Now edit /etc/php/7.4/fpm/php.ini file:
+
+**Now edit /etc/php/7.4/fpm/php.ini file:**
 sudo nano /etc/php/7.4/fpm/php.ini
 
-Uncomment and update its value with your timezone:
+**Uncomment and update its value with your timezone:**
 [Date]
 ; Defines the default timezone used by the date functions
 ; http://php.net/date.timezone
@@ -34,10 +38,13 @@ date.timezone = Asia/Karachi
 
 Save and close.
 
-Edit the /etc/php/7.4/cli/php.ini file:
+**Edit the /etc/php/7.4/cli/php.ini file:**
 
 sudo nano /etc/php/7.4/cli/php.ini
-Uncomment date.time parameter and update its value with your timezone:
+
+
+**Uncomment date.time parameter and update its value with your timezone:**
+
 [Date]
 ; Defines the default timezone used by the date functions
 ; http://php.net/date.timezone
@@ -51,10 +58,12 @@ Restart PHP service to take changes into effect:
 sudo systemctl restart php7.4-fpm
 
 **Installing Database**
+
 sudo apt-get -y install mariadb-client mariadb-server
 
 
 **Securing Database**
+
 sudo mysql_secure_installation
 
 
@@ -69,6 +78,7 @@ you haven't set the root password yet, the password will be blank,
 so you should just press enter here.
 
 **Enter current password for root (enter for none):**
+
 OK, successfully used password, moving on...
 
 Setting the root password ensures that nobody can log into the MariaDB
